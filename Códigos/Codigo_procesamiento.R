@@ -94,12 +94,16 @@ Puntajes2018$cod_grupo[which(Puntajes2018$cod_grupo=="5")] <- rep("Medio bajo", 
 Puntajes <- full_join(Puntajes2016, Puntajes2017)
 Puntajes <- full_join(Puntajes, Puntajes2018)
 
+
+
+
 tail(Puntajes)
 
 #Obtención de la base de datos
+
 datos <- inner_join(Puntajes,DesarrolloPersonal)
 datos <- inner_join(datos, Desempeno)
-colnames(datos) <- c("Agno", "Grado", "rbd", "Grupo_socioeconomico", "Ptje Lectura","Ptje Matematica","Autoestima","Convivencia", "Habitos saludables", "Formacion ciudadana", "Desempeno")
+colnames(datos) <- c("Agno", "Grado", "rbd", "Grupo_socioeconomico", "PtjeLectura","PtjeMatematica","Autoestima","Convivencia", "HabitosSaludables", "FormacionCiudadana", "Desempeno")
 
 #Guardar la base de datos nueva
 write.csv(datos,"DatosSimce.csv")
