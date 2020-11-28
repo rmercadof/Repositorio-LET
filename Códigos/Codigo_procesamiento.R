@@ -1,25 +1,25 @@
 library(readxl)
 library(tidyverse)
 
-Desempeno2016 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/cdb2016/CDB2016.xlsx")
-Desempeno2017 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/cdb2017/CDB2017.xlsx")
-Desempeno2018 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/cdb2018/cdb2018/CDB2018.xlsx")
+Desempeno2016 <- read_excel(file.choose())
+Desempeno2017 <- read_excel(file.choose())
+Desempeno2018 <- read_excel(file.choose())
 head(Desempeno2016)
 head(Desempeno2017)
 head(Desempeno2018)
 
-DesarrolloPersonal2016 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/IDPS+4°+básico+2016/idps4b2016/idps4b2016_rbd.xls")
-DesarrolloPersonal2017 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/idps4b2017/idps4b2017_rbd_final.xlsx")
-DesarrolloPersonal2018 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/IDPS4b_2018/IDPS4b_2018/Archivos XLS (XLSX)/idps_4b2018.xlsx")
+DesarrolloPersonal2016 <- read_excel(file.choose())
+DesarrolloPersonal2017 <- read_excel(file.choose())
+DesarrolloPersonal2018 <- read_excel(file.choose())
 #todas distintas
 head(DesarrolloPersonal2016)
 head(DesarrolloPersonal2017)
 head(DesarrolloPersonal2018)
 
 #
-Puntajes2016 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/Simce+4°+Basico+2016/Simce 4° Basico 2016/Archivos XLS (XLSX)/simce4b2016_rbd_publica_final.xlsx")
-Puntajes2017 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/Simce+4°+Basico+2017/Simce 4° Basico 2017/Archivos XLS (XLSX)/simce4b2017_rbd_publica_final.xlsx")
-Puntajes2018 <- read_excel("C:/Users/Romina/Repositorio-LET/datos_sin_procesar/Simce+4°+basico+2018/Simce4b2018_publicas_web/Archivos XLS (XLSX)/simce4b2018_rbd_publica_final.xlsx")
+Puntajes2016 <- read_excel(file.choose())
+Puntajes2017 <- read_excel(file.choose())
+Puntajes2018 <- read_excel(file.choose())
 head(Puntajes2016)
 head(Puntajes2017)
 head(Puntajes2018)
@@ -75,11 +75,6 @@ head(Puntajes2017)
 head(Puntajes2018)
 
 
-max(Puntajes2016$prom_lect4b_rbd, na.rm=T)
-min(Puntajes2016$prom_lect4b_rbd, na.rm=T)
-max(Puntajes2016$prom_mate4b_rbd, na.rm=T)
-min(Puntajes2016$prom_mate4b_rbd, na.rm=T)
-
 #arreglar en la primera data2017, grupo economico a string
 
 Puntajes2017$cod_grupo[which(Puntajes2017$cod_grupo==1)] <- rep("Bajo", length(Puntajes2017$cod_grupo==1))
@@ -101,9 +96,10 @@ Puntajes <- full_join(Puntajes, Puntajes2018)
 
 tail(Puntajes)
 
-Obtención de la base de datos
+#Obtención de la base de datos
 datos <- inner_join(Puntajes,DesarrolloPersonal)
 datos <- inner_join(datos, Desempeno)
+colnames(datos) <- c("Agno", "Grado", "rbd", "Grupo_socioeconomico", "Ptje Lectura","Ptje Matematica","Autoestima","Convivencia", "Habitos saludables", "Formacion ciudadana", "Desempeno")
 
 #Guardar la base de datos nueva
 write.csv(datos,"DatosSimce.csv")
