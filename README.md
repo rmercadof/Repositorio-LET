@@ -31,4 +31,4 @@ Los datos fueron obtenidos desde el sitio web  http://informacionestadistica.age
 | Convivencia | numerica/factor| Medición del Clima de convivencia escolar del establecimiento de 0 a 100 |
 | Habitos Saludables | numerica/factor | Medición de hábitos saludables en el establecimiento de 0 a 100 |
 | Formacion Cuidadana| numérica/factor| Medición de la participacion y formacion ciudadana en el establecimiento |
-| Desempeno| Categórica | Contenido 3-3 |
+| Desempeno| Categórica | Criterio de Desempeño del establecimiento  |
