@@ -84,3 +84,15 @@ datos_correlaciones
 
 
 #luego un analisis de regresion para predecir el puntaje a partir de otras variables 
+
+m_Lectura <- lm(PtjeLectura ~Grupo_socioeconomico + Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana + Desempeno, data=datos)
+
+step(m_Lectura)
+Backward <- step(m_Lectura, direction= "backward", k=2)
+
+plot(m_Lectura)
+imcdiag(m_Lectura)
+
+m_lectura2 <- update(m_Lectura, ~.-Grupo_socioeconomico - Desempeno)
+
+m_Lectura <- lm(PtjeLectura ~Grupo_socioeconomico + Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana + Desempeno, data=datos)
