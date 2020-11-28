@@ -1,5 +1,5 @@
 ---
-title: "Introducción"
+title: "Trabajo de Investigación Prueba SIMCE"
 author: "Romina Mercado"
 date: "9 de noviembre de 2020"
 output: pdf_document
@@ -8,11 +8,16 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Introducción
 
-La prueba PISA es un estudio internacional creada por la Organización para la Cooperación y el Desarrollo Económico (OCDE), que tiene por objetivos evaluar los sistemas educativos de cada país, recopilando información del desempeño en pruebas de distintas áreas del conocimientos y sobre el contexto de los estudiantes, por medio de cuestionarios que son respondidos por estudiantes, padres y directivos de los centros educativos.
+__Disclaimer: Cambié mi tema pues no pude manejar las base de datos de PISA ya que eran muy numerosas y mi pc colapsaba.__
 
-Los datos obtenidos a partir del estudio PISA son muy relevantes pues permite visualizar o analizar cuales son los factores mas importantes en cuanto a la capacidad de desarrollar aprendizajes y aplicar estas competencias en la evaluación y por ende, analizar el sistema educativo de cada país. Al evaluar esto, nos permite tomar decisiones importantes en cuanto a educacion y politicas públicas asociadas a este tema, también poder hacer asociones que permitan seguir obteniendo información relevante. Mejorar la educación aporta beneficios económicos y sociales dentro del país y del mundo, además del desarrollo personal de los ciudadanos, por lo que es un tema muy importante de investigación. 
+La Prueba del Sistema de Medición de la Calidad de la Educación (SIMCE), es una herramienta que permite al Estado de Chile a través de su Agencia de Calidad de la educación, medir el nivel de dominio de conocimientos de los escolares Chilenos del plan de estudio vigente. Esta prueba fue diseñada en la época del regimen militar con otro nombre y vigente hasta el día de hoy como "SIMCE"
 
-A partir de lo anterior, vamos a realizar un análisis de regesión lineal, para determinar las variables mas importantes que explican los resultados obtenidos en la Prueba PISA y analisis estadísticos que nos permitan obtener y concluir información importante para los objetivos del informe, por ejemplo: ¿Qué factores sobre el ambito social del estudiante afecta en el aprendizaje y aplicación del aprendizaje? o ¿Cómo podemos mejorar el sistema educativo en los países según sus requerimientos?
+Esta prueba tiene como finalidad conocer las necesidades educativas del país y ayudar a mejorar la calidad y equidad de la educación, para esto, mide los conocimientos de los estudiantes en las áreas de lectura, matemática y/o ciencia, en alumnos de los niveles: cuarto básico, sexto básico, segundo medio y tercero medio. Además de la rendición de la prueba, se aplican encuestas para alumnos y padres relacionada con el ámbito social, psicologico y socioeconómico de los estudiantes.
 
-El siguiente informe presentará una sección de antecedentes que permitan al lector interiorizarse con el formato e información que incluye el estudio PISA, y luego se hará una descripción de los datos que tenemos, para luego realizar un análisis de regresión con los datos para finalmente comentar lo que se visualiza en este análisis, 
+Los datos obtenidos a partir de la prueba SIMCE son muy relevantes, pues nos permite visualizar o analizar cuales son los factores más importantes en cuanto a la capacidad de desarrollar aprendizajes y aplicar estas competencias en la evaluación, y por ende podemos analizar el sistema educativo del país de Chile. Al evaluar esto, permite tomar decisiones importantes en cuanto a educación y políticas públicas asociadas a este tema. Mejorar la educación aporta beneficios económicos y sociales dentro del país y del mundo, además del desarrollo personal de cada ciudadano. 
+
+A partir de lo anterior, y con los datos de los cuartos básicos, de los años 2016, 2017 y 2018, en las pruebas de Lectura y Matemática, vamos a realizar un análisis descriptivo para analizar los rangos de puntajes obtenidos y su asociación y correlacion con distintas variables categóricas relacionas al ambito social obtenidas de las encuestas, y además de un regesión lineal, para determinar las variables mas importantes que explican los resultados obtenidos en la Prueba SIMCE, estos analisis estadísticos nos permitirán obtener información importante para los objetivos del informe, por ejemplo: ¿Qué factores sobre el ambito social del estudiante afecta en el aprendizaje y aplicación del aprendizaje? 
+
+El siguiente informe comenzará explicando la conformación de las variables y una explicación de su significado, para luego explicar los distintos análisis de medias, y correlaciones que se realizarán, para concluir con la realización de una regresión lineal buscando el modelo que mejor ajuste para estos datos. 
