@@ -1,5 +1,5 @@
 ---
-title: "Trabajo de Investigación Prueba SIMCE"
+title: "Análisis de las variables psicosociales relacionadas al redimiento académico: Prueba SIMCE cuartos básicos"
 author: "Romina Mercado"
 date: "9 de noviembre de 2020"
 output: rmdformats::readthedown
@@ -9,6 +9,11 @@ output: rmdformats::readthedown
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Resumen 
+bla
+bla
+
 # Introducción
 
 La Prueba del Sistema de Medición de la Calidad de la Educación (SIMCE) es una herramienta que permite al Estado de Chile, a través de su Agencia de Calidad de la Educación, medir el nivel de dominio de conocimientos de los escolares del plan de estudio vigente. Esta prueba surge en la época del regimen militar con otro nombre y vigente hasta el día de hoy con ciertas modificaciones y ampliando su cobertura como "SIMCE".
@@ -17,19 +22,15 @@ Esta prueba tiene como finalidad conocer las necesidades educativas del país y 
 
 Los datos obtenidos a partir de la prueba SIMCE son muy relevantes, pues nos permiten visualizar o analizar cuáles son los factores más importantes en cuanto a la capacidad de desarrollar aprendizajes y aplicar estas competencias en la evaluación, lo que permite obtener un diagnóstico del sistema educativo del país. El evaluar esto, permite tomar decisiones importantes en cuanto a educación y políticas públicas asociadas a este tema. Mejorar la educación aporta beneficios económicos y sociales dentro del país y del mundo, además del desarrollo personal de cada ciudadano. 
 
-Este informe tiene por objetivo descubrir cuáles factores del ambito social del estudiante repercuten en mayor medida sobre su aprendizaje y rendimiento en la prueba, y para ello se trabajará con los datos de los cuartos básicos de los años 2016, 2017 y 2018 en las pruebas de Lectura y Matemática. A partir de estos datos, se realizará un análisis descriptivo, que permitirá hacer comparaciones entre las distintas variables categóricas existentes, y por otro lado, se realizará una regesión lineal, para determinar las variables mas importantes que explican los resultados obtenidos en la Prueba SIMCE, considerando ciertas variables de control.
+Este informe tiene por objetivo descubrir cuáles factores del ambito psicosocial del estudiante repercuten en mayor medida sobre su aprendizaje y rendimiento en la prueba, y para ello se trabajará con los datos de los cuartos básicos de los años 2016, 2017 y 2018 en las pruebas de Lectura y Matemática. A partir de estos datos, se realizará un análisis descriptivo, que permitirá hacer comparaciones entre las distintas variables categóricas existentes, y por otro lado, se realizará una regesión lineal, para determinar las variables mas importantes que explican los resultados obtenidos en la Prueba SIMCE, considerando ciertas variables de control.
 
 El siguiente informe comenzará explicando cada una de las variables de la base de datos para que el lector de familiarice con sus nombres y significados, luego se realizará un annálisis de medias para los puntajes en ciertas variables de interés, y concluiremos con la generación de un modelo de regresión lineal que mejor ajuste para estos datos.  
-
-
-# Resultados 
 
 ```{r, include=F}
 library(dplyr)
 library(kableExtra)
 
 ```
-
 
 ```{r, include=F}
 datos <- read.csv(file.choose())
@@ -44,21 +45,52 @@ datos <- filter(datos, is.na(FormacionCiudadana)==F)
 
 ```
 
-Los datos están conformados por 11 variables, de las cuales hay `r length(datos$Autoestima)` observaciones, en la siguiente tabla resumen es posible ver el contenido de cada variable:
+# Metodología 
 
-| Variable | Tipo de variable | Descripción |
-| -- | -- | -- |
-| Agno | numérica | Año de rendición de la prueba SIMCE |
-| Grado  | caracter | Nivel educacional evaluado |
-| rbd | numérica | Código que identifica cada establecimiento educacional |
-| Grupo_socioeconómico | Caracter | Grupo socioeconómico |
-| PtjeLectura | numérica | Puntaje promedio obtenido por el establecimiento en la prueba de lectura |
-| PtjeMatematica | numérica| Puntaje promedio obtenido por el establecimiento en la prueba de matemática|
-| Autoestima  | numérica/factor | Medición de la motivación y autoestima de los estudiantes de 0 a 100 |
-| Convivencia | numerica/factor| Medición del Clima de convivencia escolar del establecimiento de 0 a 100 |
-| HabitosSaludables | numerica/factor | Medición de hábitos saludables en el establecimiento de 0 a 100 |
-| FormacionCuidadana| numérica/factor| Medición de la participacion y formacion ciudadana en el establecimiento |
-| Desempeno| Categórica | Criterio de Desempeño del establecimiento  |
+### Origen de los datos
+Actualmente, los resultados obtenidos por los estudiantes al rendir la prueba SIMCE se encuentran como datos de acceso público en el sitio web de la Agencia de la Calidad de la Educación. Podemos hallar los resultados de las pruebas aplicadas entre los años 1988 al 2019. 
+
+En el mismo sitio también es posible encontrar bases de datos de las categorías de desempeño de todos los establecimientos clasificados en el proceso de rendición de la prueba SIMCE, y por otro lado promedios de los indicadores de desarrollo personal y social para cada centro educativo. Estos datos se pueden hallar para un período de tiempo más acotado, pues se encuentran entre los años 2014 al 2019. 
+
+
+### Manipulación de las bases de datos
+
+Para nuestro estudio se escogieron las bases de datos para: los resultados de la prueba SIMCE, criterios de desempeño e indicadores de desarrollo personal y social de los establecimientos entre los años 2016, 2017 y 2018. Cada una de estas bases de datos se consideró exclusivamente para los estudiantes de cuarto año básico para mantener como una varible fija el nivel en que se encuentran los estudiante, y partir de esto, realizar el estudio. 
+
+Para trabajar estos datos se creó una nueva base de datos, que contiene la información de las tres bases de datos iniciales. Para realizar esto, se filtraron los datos de forma de emparejar cada una de las observaciones con la varible RBD. Esta sigla indica un código que identifica a cada establecimiento educacional y se encontraba en las tres bases de datos, por lo que de esta manera los datos de los puntajes de la prueba, indices psicosociales y criterios de desempeño, se pudieron unir en una misma base de datos.  
+
+Los datos originales tenían una considerable cantidad de datos NA, es decir, observaciones para distintas variables, que no tenían un valor definido. Esto puede ocurrir por pérdida de información desde el origen de los datos, o la no rendición de las pruebas y cuestionarios implementados por SIMCE. Por otro lado también se generaron algunos datos NA al hacer el emparejamiento descrito anteriormente, por lo que en este proceso dejamos la base de datos limpia para poder trabajarla. 
+
+Finalmente para realizar ciertos análisis, se transformaron transitoriamente, los valores númericos de las variables psicosociales (0 a 100) a variables categóricas, separando el intervalo [0,100] en cuatro intervalos mas pequeños, que corresponderían a cada uno de los niveles de esta variable categórica. 
+
+
+### Descripción de las variables 
+
+Los datos finalmente están conformados por 11 variables, de las cuales hay `r length(datos$Autoestima)` observaciones.  En la siguiente tabla resumen es posible ver el contenido de cada variable:
+
+| Variable | Tipo de variable | Descripción | Rango_de_valores|
+| :--: | :--: | :--: | :--:|
+| Agno | numérica/factor | Año de rendición de la prueba SIMCE | "2016" "2017"  "2018"|
+| Grado  | caracter | Nivel educacional evaluado (en nuestro trabajo solo se considera 4b) | "2b"  "4b"  "6b"  "8b"  "2m" |  \mbox{`r max(datos$rbd)`}
+| rbd | numérica | Código que identifica a cada establecimiento educacional | 1 al 40459 |
+| Grupo_socioeconómico | Caracter | Grupo socioeconómico del establecimiento |"Alto"  "Medio alto"  "Medio" "Medio bajo" "Bajo"  |
+| PtjeLectura | numérica | Puntaje promedio obtenido por el establecimiento en la prueba de lectura | `r min(datos$PtjeLectura)` al `r max(datos$PtjeLectura)`|
+| PtjeMatematica | numérica| Puntaje promedio obtenido por el establecimiento en la prueba de matemática|`r min(datos$PtjeMatematica)` al `r max(datos$PtjeMatematica)` |
+| Autoestima  | numérica | Promedio por establecimientodel índice de la motivación y autoestima de los estudiantes| 0 al 100|
+| Convivencia | numerica| Promedio por establecimiento del índice del Clima de convivencia escolar del colegio| 0 al 100 |
+| HabitosSaludables | numerica |Promedio por establecimiento del índice que mide la promoción de hábitos saludables en el colegio | 0 al 100 |
+| FormacionCuidadana| numérica| Promedio por establecimiento del índice de medición de la participacion y formacion ciudadana en el colegio | 0 al 100|
+| Desempeno| Categórica | Criterio de Desempeño del establecimiento  |"INSUFICIENTE" "MEDIO-BAJO" "MEDIO" "ALTO" |
+
+
+
+
+# Resultados 
+
+El objetivo de esta sección es presentar los resultados de los análisis realizados. En caso de utilizar tablas o figuras, se espera que estas estén numeradas, se encuentren conectadas con el texto y debidamente presentadas y explicadas, con el fin de que quien lee pueda seguir el hilo conductor del informe.
+
+### Análisis descriptivo
+
 
 ```{r, include=F}
 #Valores para tabla
@@ -102,7 +134,7 @@ D_alto_Lec <- mean(datos$PtjeLectura[datos$Desempeno=="ALTO"]) # [1] 286.296
 
 ```
 
-En la siguiente tabla podemos ver un resumen de la muestra en relación al puntaje obtenido en cada prueba.
+Para comenzar, visualizaremos en la siguiente tabla, un resumen de la muestra en relación al puntaje obtenido en cada prueba.
 ```{r include=F}
 smry_lec <- summary(datos$PtjeLectura)
 smry_mat <- summary(datos$PtjeMatematica)
@@ -118,59 +150,55 @@ smry_mat <- summary(datos$PtjeMatematica)
 | Máximo | `r smry_lec[6]` |`r smry_mat[6]` |
 | Promedio | `r round(smry_lec[4],1)`|`r round(smry_mat[4],2)` |
 
-Estos resultados se pueden visualizar también a partir de un gráfico de cajas y bigotes, en donde los puntos inferiores y superiores muestran los valores minimos y maximos respectivamente, y las lineas horizontales de la caja coloreada representan el primer, segundo(mediana) y tercer cuartil. Además, especificamente en este caso, se incorporó el valor de la media con una equis roja en el punto correspondiente en el gráfico. 
+Estos resultados se pueden visualizar también a partir de un gráfico de cajas y bigotes, en donde las lineas horizontales inferiores y superiores muestran los valores minimos y maximos respectivamente, y las lineas horizontales de la caja coloreada representan el primer, segundo(mediana) y tercer cuartil. Además, especificamente en este caso, se incorporó el valor de la media con una equis roja en el punto correspondiente en el gráfico. 
 ```{r, echo=F}
-boxplot(datos$PtjeLectura, datos$PtjeMatematica, names=c("Prueba Lectura", "Prueba Matemática"),col="lightcyan2", main="Gráfico de Cajas para puntaje SIMCE", ylab= "Puntajes", OutlierSize=1)
+boxplot(datos$PtjeLectura, datos$PtjeMatematica, names=c("Prueba Lectura", "Prueba Matemática"),col="lightcyan2", main="Gráfico de Cajas para puntaje SIMCE", ylab= "Puntajes", range=0)
 points(c(smry_lec[4], smry_mat[4]), col = "red", pch = 4, lwd=3)
 #points(smry_mat[4], col = "red", pch = 19)
 ```
+```{r}
+outliers <- boxplot(datos$PtjeLectura, plot=F)$out
+datos_sout<- datos[-which(datos$PtjeLectura %in% outliers),]
+```
+
+Uno de los ejes principales de la presente investigación fue encontrar relaciones entre las variables psicosociales y los puntajes obtenidos por los estudiantes, para ello se separaron los datos de cada nivel de la variable categórica psicosocial y se calcularon los promedios de puntajes para cada prueba. 
 
 
-En las siguiente tablas se definirá una varibale categórica de referencia para luego hacer sus repesctivos análisis de promedios. 
+En las siguientes tablas se definirá una varibale categórica de referencia para realizar análisis de promedios para cada nivel de la variable. 
 
-Considerando la variable *"Nivel socioeconómico"* se realiza un análisis de promedios, considerando cada uno de los niveles de esta variable: Bajo, Medio-bajo, Medio, Medio-alto, Alto. 
-
-
-```{r include=F}
-##Promedio puntaje segun nivel socioeconomico MATESMATICAS
+#### Análisis de promedios Nivel Socioeconómico
+La variable *"Nivel socioeconómico"* tiene como niveles las categorías: Bajo, Medio-bajo, Medio, Medio-alto y Alto. Se calculará el promedio de la prueba de lectura y de matemática para cada uno de estos niveles. 
 
 
-NSE_bajo_Mat <- mean(datos$PtjeMatematica[datos$Grupo_socioeconomico =="Bajo"]) #[1] 235.5431
+```{r, echo=F}
 
-NSE_medbaj_Mat <-mean(datos$PtjeMatematica[datos$Grupo_socioeconomico=="Medio bajo" | datos$Desempeno=="MEDIO-BAJO (NUEVO)"]) #[1] 247.0911
-
-NSE_medio_Mat <- mean(datos$PtjeMatematica[datos$Grupo_socioeconomico=="Medio"]) #[1] 256.6302
-
-NSE_medalt_Mat <-mean(datos$PtjeMatematica[datos$Grupo_socioeconomico=="Medio alto"]) # [1] 272.7193
-
-NSE_alto_Mat <-mean(datos$PtjeMatematica[datos$Grupo_socioeconomico=="Alto"]) # [1] 290.5961
-
-
-##Promedio puntaje segun nivel socioeconomico Lectura
-
-NSE_bajo_Lec <- mean(datos$PtjeLectura[datos$Grupo_socioeconomico =="Bajo"]) #[1] 253.0105
-
-NSE_medbaj_Lec <-mean(datos$PtjeLectura[datos$Grupo_socioeconomico=="Medio bajo" | datos$Desempeno=="MEDIO-BAJO (NUEVO)"]) #[[1] 259.4248
-
-NSE_medio_Lec <-mean(datos$PtjeLectura[datos$Grupo_socioeconomico=="Medio"]) #[1] 265.0224
-
-NSE_medalt_Lec <-mean(datos$PtjeLectura[datos$Grupo_socioeconomico=="Medio alto"]) # [1] 280.7158
-
-NSE_alto_Lec <-mean(datos$PtjeLectura[datos$Grupo_socioeconomico=="Alto"]) # [1] 296.0503
+media_len0 <- as.vector(tapply(datos$PtjeLectura, datos$Grupo_socioeconomico , mean))
+media_mat0 <- as.vector(tapply(datos$PtjeMatematica, datos$Grupo_socioeconomico, mean))
+levels_NSE <- c("Bajo","Medio-Bajo", "Medio", "Medio-alto", "Alto")
+tabla0 <-  data.frame(levels_NSE, media_len0[c(2,5,3,4,1)], media_mat0[c(2,5,3,4,1)])
+names(tabla0)=c("Nivel Socioeconómico", "Promedios Prueba Lectura","Promedios Prueba Matemática")
+tabla0[,2:3] <-  round(tabla0[,2:3],2)
 
 ```
 
-| Nivel Socioeonómico| Promedios Prueba Lectura | Promedios Prueba Matemática|
-| -- | -- | -- |
-|Bajo| `r round(NSE_bajo_Lec,2)` |`r round(NSE_bajo_Mat,2)` |
-|Medio-bajo | `r round(NSE_medbaj_Lec,2)` | `r round(NSE_medbaj_Mat,2)` |
-|Medio| `r round(NSE_medio_Lec,2)` | `r round(NSE_medio_Mat,2)` |
-|Medio-alto | `r round(NSE_medalt_Lec,2)` | `r round(NSE_medalt_Mat, 2)` |
-|Alto | `r round(NSE_alto_Lec,2)` | `r round(NSE_alto_Mat, 2)` |
+```{r, echo=F}
+kbl(tabla0, caption="Tabla 1", booktabs=T)
 
-como podemos notar los puntajes promedio más altos se encuentran en el nivel socioeconómico Alto, y a medida que el nivel socioeconómico sube también lo hacen los puntajes. Esto puede tenener una interpretación de que a mayor nivel socioeconomico se recibe una educación de mejor calidad, o desde otra mirada, que a mayor nivel socioeconomico mejores condiciones permiten que al rendir la prueba se obtengan mejores resultados. Sería interesante conocer qué condiciones son las que permiten este mejor desempeño. 
+```
+```{r, echo=F}
+barplot(as.matrix(rbind(tabla0$`Promedios Prueba Lectura`, tabla0$`Promedios Prueba Matemática`)), beside=T, ylim=c(200,300), col=c("lightblue", "mistyrose"), xpd = FALSE, main="Relación de los promedios de las prueba SIMCE con nivel Socioeconómico", names=levels_NSE, 
+        xlab="Nivel Socioeconómico",
+        ylab="Puntajes SIMCE")
 
-Realicemos el mismo análisis para las variables relacionadas con factores interpersonales y sociales. 
+legend('topleft', legend=c("Prueba Lectura", "Prueba Matemática"), bty='n',
+       fill=c("lightblue", "mistyrose"))
+```
+
+Lo que podemos apreciar en la *Tabla 1* y la gráfica a siguiente que lo representa, es que los puntajes promedio más bajos se encuentran en el nivel socioeconómico Bajo, y a medida que el nivel socioeconómico sube también lo hacen los puntajes. Esto permite algunas interpretaciones obvias como que a mayor nivel socioeconomico se recibe una educación de mejor calidad, o desde otra mirada, que a mayor nivel socioeconomico mejores condiciones permiten que al rendir la prueba se obtengan mejores resultados. Sería interesante conocer qué condiciones son las que permiten este mejor desempeño. 
+
+#### Análisis de promedios Convivencia Escolar
+
+Al realizar el mismo analisis anterior a la variable ConvivenciaEscolar, obtenemos lo siguiente,
 
 ```{r, echo=F}
 datos$Convivencia_c<-cut(datos$Convivencia, seq(30,100, length.out=5))
@@ -185,32 +213,189 @@ names(tabla1) <- c("Puntaje de Convivencia Escolar", "Promedios Prueba Lectura",
 ```
 
 ```{r, echo=F}
-kbl(tabla1)
+kbl(tabla1, caption="Tabla 2", booktabs=T)
 ```
-comprobemos esto con un scatterplot para ver que las variables se encentran correlacionadas
+```{r, echo=F}
+barplot(as.matrix(rbind(tabla1$`Promedios Prueba Lectura`, tabla1$`Promedios Prueba Matemática`)), beside=T, ylim=c(200,300), col=c("lightblue", "mistyrose"), xpd = FALSE, main="Relación promedios prueba SIMCE con el clima de convivencia escolar", names=levels_convi1, 
+        xlab= "Puntaje indicador clima de convivencia escolar",
+        ylab= "Puntajes SIMCE")
 
-```{r}
-plot(datos$Convivencia, datos$PtjeLectura)
+legend('topleft', legend=c("Prueba Lectura", "Prueba Matemática"), bty='n',
+       fill=c("lightblue", "mistyrose"))
 ```
 
+Al observar la *Tabla 2* podemos darnos cuenta que los resultados son muy similares a la variable estudiada en el punto anterior (Nivel socioeconómico), por lo que también se puede inferir que el Clima de convivencia escolar por sí solo afecta positivamente en la rendición de la prueba y los resultados obtenidos. 
+
+
+#### Análisis de promedios para criterio de Hábitos Saludables
+
+Se realiza el mismo análisis anterior, que se ve representado en la tabla y grafica a continuación: 
 
 ```{r, echo=F}
-datos$HabitosSaludables_c<-cut(datos$HabitosSaludables, seq(1, 100, length.out=5))
+datos$HabitosSaludables_c<-cut(datos$HabitosSaludables, seq(30, 100, length.out=5))
 
 media_len2 <- as.vector(tapply(datos$PtjeLectura, datos$HabitosSaludables_c , mean))
 media_mat2 <- as.vector(tapply(datos$PtjeMatematica, datos$HabitosSaludables_c, mean))
-levels_convi2 <- levels(datos$HabitosSaludables_c)
-tabla2 <-  data.frame(levels_convi2, media_len2, media_mat2)
+levels_hab <- levels(datos$HabitosSaludables_c)
+tabla2 <-  data.frame(levels_hab, media_len2, media_mat2)
 tabla2[,2:3] <-  round(tabla2[,2:3],2)
 names(tabla2) <- c("Puntaje Hábitos saludables en colegio", "Promedios Prueba Lectura", "Promedios Prueba Matemática")
 
 ```
 
 ```{r, echo=F}
-kbl(tabla2)
+kbl(tabla2, caption="Tabla 3")
 ```
+
+```{r, echo=F}
+barplot(as.matrix(rbind(tabla2$`Promedios Prueba Lectura`, tabla2$`Promedios Prueba Matemática`)), beside=T, ylim=c(200,300), col=c("lightblue", "mistyrose"), xpd = FALSE, main="Relación de los promedios de las prueba SIMCE con los hábitos saludables", names=levels_hab, xlab= "Puntaje inicador de promoción de Hábitos saludables en el establecimiento", ylab="Puntajes SIMCE")
+
+legend('topleft', legend=c("Prueba Lectura", "Prueba Matemática"), bty='n',
+       fill=c("lightblue", "mistyrose"))
 ```
+Es posible notar que los valores de la *Tabla 3*, también se comportan de una manera similar a lo observado en los análisis anteriores, es decir, aumentando el nivel de promoción de hábitos saludables en los establecimientos, también sube el puntaje promedio obtenido por los estudiantes, pero no podemos aserverar de manera concreta esta relación pues para la prueba de matemática, en las dos categorías más altas, los puntajes promedios son muy similares, lo que nos podría indicar que los datos en todo ese intervalo, se comportan de manera muy similar, o bien de manera muy dispersa. Lo mejor en este caso es hacer otro tipo de análisis, por ejemplo, un análisis de correlación para ver como se comportan los datos de forma más concluyente. 
+
+
+#### Análisis de promedios para criterio de Autoestima de los estudiantes
+
+Se realizan los mismos análisis anteriores, que se ven representado en la tabla y grafica a continuación: 
+
+```{r, echo=F}
+datos$Autoestima_c<-cut(datos$Autoestima, seq(30, 100, length.out=5))
+
+media_len2 <- as.vector(tapply(datos$PtjeLectura, datos$Autoestima_c , mean))
+media_mat2 <- as.vector(tapply(datos$PtjeMatematica, datos$Autoestima_c, mean))
+levels_aut <- levels(datos$Autoestima_c)
+tabla3 <-  data.frame(levels_aut, media_len2, media_mat2)
+tabla3[,2:3] <-  round(tabla3[,2:3],2)
+names(tabla3) <- c("Puntaje promedio del Autoestima del estudiante", "Promedios Prueba Lectura", "Promedios Prueba Matemática")
+
+```
+
+```{r, echo=F}
+kbl(tabla3, caption="Tabla 4")
+```
+
+```{r, echo=F}
+barplot(as.matrix(rbind(tabla3$`Promedios Prueba Lectura`, tabla3$`Promedios Prueba Matemática`)), beside=T, ylim=c(150,300), col=c("lightblue", "mistyrose"), xpd = FALSE, main="Relación de los promedios de las prueba SIMCE con el autoestima de los estudiantes", names=levels_hab, xlab= "Puntaje indicador de autoestima del estudiante", ylab="Puntajes SIMCE")
+
+legend('topleft', legend=c("Prueba Lectura", "Prueba Matemática"), bty='n',
+       fill=c("lightblue", "mistyrose"))
+``` 
+
+Es posible notar con los datos de la *Tabla 4* que a medida que aumenta el promedio de autoestima de los estudiantes en los establecimientos, obtienen mejores puntajes promedios en la prueba simce. 
+
+
+#### Análisis de promedios para criterio de Formación cuidadana en los establecimientos
+
+Se realizan los mismos análisis anteriores, que se ven representado en la tabla y grafica a continuación: 
+
+```{r, echo=F}
+datos$FormacionCiudadana_c<-cut(datos$FormacionCiudadana, seq(30, 100, length.out=5))
+
+media_len2 <- as.vector(tapply(datos$PtjeLectura, datos$FormacionCiudadana_c , mean))
+media_mat2 <- as.vector(tapply(datos$PtjeMatematica, datos$FormacionCiudadana_c, mean))
+levels_aut <- levels(datos$FormacionCiudadana_c)
+tabla3 <-  data.frame(levels_aut, media_len2, media_mat2)
+tabla3[,2:3] <-  round(tabla3[,2:3],2)
+names(tabla3) <- c("Puntaje Promedio formación ciudadana", "Promedios Prueba Lectura", "Promedios Prueba Matemática")
+
+```
+
+```{r, echo=F}
+kbl(tabla3, caption="Tabla 4")
+```
+
+```{r, echo=F}
+barplot(as.matrix(rbind(tabla3$`Promedios Prueba Lectura`, tabla3$`Promedios Prueba Matemática`)), beside=T, ylim=c(150,300), col=c("lightblue", "mistyrose"), xpd = FALSE, main="Relación de los promedios SIMCE con la formación cuidadana del establecimiento", names=levels_hab, xlab= "Puntaje formación ciudadana", ylab="Puntajes SIMCE")
+
+legend('topleft', legend=c("Prueba Lectura", "Prueba Matemática"), bty='n',
+       fill=c("lightblue", "mistyrose"))
+``` 
+
+Al igual como ocurrió con la variable *Hábitos Saludables*, el resultado que obtenemos ahora para *Autoestima* no es tan concluyente, pues los últimos dos niveles tienen promedios muy similares, por lo que se requieren otros estudios. 
+
+### Análisis de Regresión 
+
+```{r}
+modelo_lectura <- lm(PtjeLectura~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos)
+summary(modelo_lectura)
+modelo_lectura2 <- lm(PtjeLectura~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos_sout)
+summary(modelo_lectura2)
+modelo_matematica <- lm(PtjeMatematica~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos)
+```
+```{r}
+library(mctest)
+imcdiag(modelo_lectura)
+imcdiag(modelo_matematica)
+```
+
+```{r}
+AIC_Forw <- step(lm(PtjeLectura~1, data=datos), data= datos, scope=~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana + Grupo_socioeconomico, k=2)
+```
+```{r}
+#busqueda outliers
+residuos <- rstandard(modelo_lectura2)
+
+plot(modelo_lectura2$fitted.values, residuos, pch=19, xlab="Valores ajustados", ylab="Residuos estandarizados", ylim=c(-4,4))
+abline(h=qnorm(0.975), col="blue", lwd=2); abline(h=-qnorm(0.975), col="blue", lwd=2)
+
+```
+```{r}
+#puntos de palanca
+hii <- hatvalues(modelo_lectura)
+residuos2 <- rstandard(modelo_lectura)
+p=12
+linea <- 2*(p+1)/26944
+
+plot(hii, residuos2, pch=19, xlab=expression(h[ii](leverage)),
+     ylab="standardized residual")
+abline(v=linea, col="red", lwd=2)
+```
+```{r}
+# Load the package
+library(ggstatsplot)
+Q <- quantile(datos$PtjeLectura, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(datos$PtjeLectura)
+eliminated<- subset(datos, datos$PtjeLectura > (Q[1] - 1.5*iqr) & warpbreaks$breaks < (Q[2]+1.5*iqr))
+
+```
+
+```{r}
+#test independencia  : no hay independencia
+plot(modelo_lectura$residuals)
+require(lmtest)
+dwtest(modelo_lectura, alternative="two.sided")
+```
+```{r}
+#homocedasticidad no hay
+require(lmtest)
+bptest(AIC_Back)
+```
+```{r}
+ri <- rstandard(modelo_lectura)
+# Histogram
+hist(ri, breaks=100, main="", xlab="standardized residual", probability=TRUE, xlim=c(-4,4))
+curve(dnorm(x), col="blue", lwd=2, add=TRUE)
 
 
 ```
 
+```{r}
+qqnorm(datos$PtjeLectura)
+qqline(datos$PtjeLectura, col="red")
+
+
+```
+
+
+
+# Conclusiones
+El objetivo de esta investigación fue evaluar cuales eran las variables más importante en cuánto al desempeño de los estudiantes en la prueba SIMCE.  Al realizar el análisis descriptivo pudimos ver que las variables estudiadas que mas influían en el aumento o disminución de puntaje en la prueba fueron: el nivel socioeconómico, la convivencia escolar y el autoestima. Es importante mencionar, que estas conclusiones nos permiten tener especial atención en estas variables para futuras investigaciones con bases de datos más grandes, y relacionar las ideas, no obstante en la presente investigación, con sólo el análisis descrpitivo no podemos hacer mas conclusiones a partir de ellas. 
+
+Al realizar el análisis de regresión fue claro que el modelo de regresión lineal más adecuado era el que incluía  como variables explicativas, todas las variables que habíamos considerado, es decir, el nivel socioeconómico, la convivencia escolar, los hábitos saludables, el autoestima y el criterio de formación ciudadana. Esto es positivo en el sentido que la base de datos se utilizó en su totalidad para realizar el modelo, pero también es cabe mencionar que el $R^2$ es muy bajo, es decir, el modelo no ajusta muy bien. 
+
+
+# Referencias
+
+En esta sección se deben presentar las referencias citadas a lo largo del informe utilizando de manera consistente un estilo de citación a elección (APA, ISO, Vancouver, MLA, etc.).
