@@ -317,23 +317,23 @@ Al igual como ocurrió con la variable *Hábitos Saludables*, el resultado que o
 
 ### Análisis de Regresión 
 
-```{r}
+```{r, include=F}
 modelo_lectura <- lm(PtjeLectura~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos)
 summary(modelo_lectura)
 modelo_lectura2 <- lm(PtjeLectura~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos_sout)
 summary(modelo_lectura2)
 modelo_matematica <- lm(PtjeMatematica~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos)
 ```
-```{r}
+```{r, include = F}
 library(mctest)
 imcdiag(modelo_lectura)
 imcdiag(modelo_matematica)
 ```
 
-```{r}
+```{r, include=FALSE}
 AIC_Forw <- step(lm(PtjeLectura~1, data=datos), data= datos, scope=~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana + Grupo_socioeconomico, k=2)
 ```
-```{r}
+```{r, echo=F}
 #busqueda outliers
 residuos <- rstandard(modelo_lectura2)
 
@@ -341,7 +341,7 @@ plot(modelo_lectura2$fitted.values, residuos, pch=19, xlab="Valores ajustados", 
 abline(h=qnorm(0.975), col="blue", lwd=2); abline(h=-qnorm(0.975), col="blue", lwd=2)
 
 ```
-```{r}
+```{r, echo=F}
 #puntos de palanca
 hii <- hatvalues(modelo_lectura)
 residuos2 <- rstandard(modelo_lectura)
@@ -352,7 +352,7 @@ plot(hii, residuos2, pch=19, xlab=expression(h[ii](leverage)),
      ylab="standardized residual")
 abline(v=linea, col="red", lwd=2)
 ```
-```{r}
+```{r, warning=F, include=F}
 # Load the package
 library(ggstatsplot)
 Q <- quantile(datos$PtjeLectura, probs=c(.25, .75), na.rm = FALSE)
@@ -361,18 +361,18 @@ eliminated<- subset(datos, datos$PtjeLectura > (Q[1] - 1.5*iqr) & warpbreaks$bre
 
 ```
 
-```{r}
+```{r, echo=F}
 #test independencia  : no hay independencia
 plot(modelo_lectura$residuals)
 require(lmtest)
 dwtest(modelo_lectura, alternative="two.sided")
 ```
-```{r}
+```{r, echo=F}
 #homocedasticidad no hay
 require(lmtest)
-bptest(AIC_Back)
+bptest(modelo_lectura)
 ```
-```{r}
+```{r, echo=F}
 ri <- rstandard(modelo_lectura)
 # Histogram
 hist(ri, breaks=100, main="", xlab="standardized residual", probability=TRUE, xlim=c(-4,4))
@@ -381,7 +381,7 @@ curve(dnorm(x), col="blue", lwd=2, add=TRUE)
 
 ```
 
-```{r}
+```{r, echo=F}
 qqnorm(datos$PtjeLectura)
 qqline(datos$PtjeLectura, col="red")
 
@@ -393,7 +393,11 @@ qqline(datos$PtjeLectura, col="red")
 # Conclusiones
 El objetivo de esta investigación fue evaluar cuales eran las variables más importante en cuánto al desempeño de los estudiantes en la prueba SIMCE.  Al realizar el análisis descriptivo pudimos ver que las variables estudiadas que mas influían en el aumento o disminución de puntaje en la prueba fueron: el nivel socioeconómico, la convivencia escolar y el autoestima. Es importante mencionar, que estas conclusiones nos permiten tener especial atención en estas variables para futuras investigaciones con bases de datos más grandes, y relacionar las ideas, no obstante en la presente investigación, con sólo el análisis descrpitivo no podemos hacer mas conclusiones a partir de ellas. 
 
-Al realizar el análisis de regresión fue claro que el modelo de regresión lineal más adecuado era el que incluía  como variables explicativas, todas las variables que habíamos considerado, es decir, el nivel socioeconómico, la convivencia escolar, los hábitos saludables, el autoestima y el criterio de formación ciudadana. Esto es positivo en el sentido que la base de datos se utilizó en su totalidad para realizar el modelo, pero también es cabe mencionar que el $R^2$ es muy bajo, es decir, el modelo no ajusta muy bien. 
+Al realizar el análisis de regresión fue claro que el modelo de regresión lineal más adecuado era el que incluía  como variables explicativas, todas las variables que habíamos considerado, es decir, el nivel socioeconómico, la convivencia escolar, los hábitos saludables, el autoestima y el criterio de formación ciudadana. Esto es positivo en el sentido que la base de datos se utilizó en su totalidad para realizar el modelo, pero también es cabe mencionar que el $R^2$ es muy bajo, es decir, el modelo no ajusta muy bien, y esto podría significar que el modelo podría ser mejorable si existiesen más variables a considerar. Esto nos permite evidenciar que el actual trabajo es útil para futuros investigadores que necesiten conocer a priori algunas variables que tengan relación el tema de el desempeño académico. 
+
+En cuanto al modelo seleccionado, tenemos que comentar que no cumple con los supuestos para realizar un modelo de regresión lineal, por lo tanto sería mucho mas efectivo realizar otro tipo de regresiones que impliquen algoritmos mas complejos para procesar estos datos. Los supuestos se intentaron mejorar, por ejemplo la excesiva cantidad de datos atípicos existentes, pero no mejoraron el ajuste, de hecho lo empeoraron, por lo que es importante considerar que cada uno de los datos para esta regresión es muy importante. 
+
+Para estudios futuros, sería importante realizar un análisis con técnicas más avanzadas y poder concluir algunas cosas más, de todas formas, lo que se obtuvo en este trabajo nos indica que de todas formas es importante el factor psicosocial en el rendimiento de los alumnos, por lo que serían en general factores importantes a considerar si se quiere mejorar la educación y el rendimiento de los alumnos. 
 
 
 # Referencias
