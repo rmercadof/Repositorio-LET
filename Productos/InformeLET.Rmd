@@ -11,8 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Resumen 
-bla
-bla
+Trabajo enfocado en el análisis de promedios y una regresión lineal que evalúa las variables psicosociales (Autoestima, nivel socioeconómico, hábitos saludables, formación ciudadana y convivencia escolar). El estudio se hace a partir de los datos de la prueba SIMCE de los años 2017, 2018, 2019 para los cuartos básicos. A partir de lo anterior se logra concluir que estas variables sí son relevantes. 
 
 # Introducción
 
@@ -155,10 +154,6 @@ Estos resultados se pueden visualizar también a partir de un gráfico de cajas 
 boxplot(datos$PtjeLectura, datos$PtjeMatematica, names=c("Prueba Lectura", "Prueba Matemática"),col="lightcyan2", main="Gráfico de Cajas para puntaje SIMCE", ylab= "Puntajes", range=0)
 points(c(smry_lec[4], smry_mat[4]), col = "red", pch = 4, lwd=3)
 #points(smry_mat[4], col = "red", pch = 19)
-```
-```{r}
-outliers <- boxplot(datos$PtjeLectura, plot=F)$out
-datos_sout<- datos[-which(datos$PtjeLectura %in% outliers),]
 ```
 
 Uno de los ejes principales de la presente investigación fue encontrar relaciones entre las variables psicosociales y los puntajes obtenidos por los estudiantes, para ello se separaron los datos de cada nivel de la variable categórica psicosocial y se calcularon los promedios de puntajes para cada prueba. 
@@ -303,7 +298,7 @@ names(tabla3) <- c("Puntaje Promedio formación ciudadana", "Promedios Prueba Le
 ```
 
 ```{r, echo=F}
-kbl(tabla3, caption="Tabla 4")
+kbl(tabla3, caption="Tabla 5")
 ```
 
 ```{r, echo=F}
@@ -317,78 +312,107 @@ Al igual como ocurrió con la variable *Hábitos Saludables*, el resultado que o
 
 ### Análisis de Regresión 
 
+Se comenzó el análisis creando dos modelos de regresión lineal con variables respuestas *PtjeLectura* y *PtjeMatematica*. Para cada uno de ellos se utilizaron como variables explicativas las variables *Autoestima*, *Convivencia*, *HabitosSaludables* y  *FormacionCiudadana*.
+
+El modelo para la prueba de lectura obtuvo un $R^2$ de 0.2636, lo cual es bastante bajo, considerando que el ideal de un modelo es acercar su $R^2$ lo más posible al valor de 1. 
+En cuanto al modelo para la prueba de matemática se obtuvo un $R^2$ de 0.1816, un valor bastante bajo tambien.
+
+El propósito en las siguiente lineas será mejorar el ajuste de nuestro modelo, chequeando algunos problemas de los datos, que podrían estar perjudicando la regresión.
+
 ```{r, include=F}
 modelo_lectura <- lm(PtjeLectura~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos)
-summary(modelo_lectura)
-modelo_lectura2 <- lm(PtjeLectura~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos_sout)
-summary(modelo_lectura2)
+#summary(modelo_lectura)
+#summary(modelo_lectura2)
 modelo_matematica <- lm(PtjeMatematica~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana, data=datos)
+summary(modelo_matematica)
 ```
+
+#### Multicolinealidad 
+
+La multicolinealidad es un problema existente en algunas bases de datos, en donde ciertas variables se encuentran correlacionadas con las demás, causando de esta forma redundancia en el modelo. Para verificar que no exista esta dependencia entre variables se utilizó el índice VIF que nos indica que si existe o no multicolinealidad entre las variables, obteniendo lo siguiente
 ```{r, include = F}
 library(mctest)
 imcdiag(modelo_lectura)
 imcdiag(modelo_matematica)
+#Autoestima         1.8428
+#Convivencia        2.0197
+#HabitosSaludables  2.1616
+#FormacionCiudadana 2.9224
 ```
 
+```{r, echo=F}
+variables <- c("Autoestima", "Convivencia", "HabitosSaludables", "FormacionCiudadana")
+vif_lec <- c(1.8428, 2.0197, 2.1616, 2.9224)
+tabla <- data.frame(variables, vif_lec, vif_lec)
+names(tabla) <- c("Variables explicativas", "VIF  modelo lectura", "VIF modelo matematica")
+kbl(tabla, caption="Tabla 6")
+```
+como podemos notar en la *Tabla 6*  todos los valores VIF son menores a 10, por lo que no estaríamos en presencia de multicolinealidad para ninguno de los modelos. 
+
+#### Independencia
+
+Uno de los tres supuestos que debe cumplir un modelo de regresión lineal es la independencia. Para verificar este supuesto se realizó el test de Durbin Watson que nos dió como resultado la no existencia de independencia, y se puede visualizar el mismo resultado en la grafica a continuacion.
 ```{r, include=FALSE}
 AIC_Forw <- step(lm(PtjeLectura~1, data=datos), data= datos, scope=~ Autoestima + Convivencia + HabitosSaludables + FormacionCiudadana + Grupo_socioeconomico, k=2)
 ```
-```{r, echo=F}
-#busqueda outliers
-residuos <- rstandard(modelo_lectura2)
 
-plot(modelo_lectura2$fitted.values, residuos, pch=19, xlab="Valores ajustados", ylab="Residuos estandarizados", ylim=c(-4,4))
-abline(h=qnorm(0.975), col="blue", lwd=2); abline(h=-qnorm(0.975), col="blue", lwd=2)
-
-```
-```{r, echo=F}
-#puntos de palanca
-hii <- hatvalues(modelo_lectura)
-residuos2 <- rstandard(modelo_lectura)
-p=12
-linea <- 2*(p+1)/26944
-
-plot(hii, residuos2, pch=19, xlab=expression(h[ii](leverage)),
-     ylab="standardized residual")
-abline(v=linea, col="red", lwd=2)
-```
-```{r, warning=F, include=F}
-# Load the package
-library(ggstatsplot)
-Q <- quantile(datos$PtjeLectura, probs=c(.25, .75), na.rm = FALSE)
-iqr <- IQR(datos$PtjeLectura)
-eliminated<- subset(datos, datos$PtjeLectura > (Q[1] - 1.5*iqr) & warpbreaks$breaks < (Q[2]+1.5*iqr))
-
-```
-
-```{r, echo=F}
+```{r, echo=F, message=F}
 #test independencia  : no hay independencia
 plot(modelo_lectura$residuals)
+
+```
+```{r, include=F}
 require(lmtest)
 dwtest(modelo_lectura, alternative="two.sided")
 ```
-```{r, echo=F}
+
+Evidentemente los residuos siguen una tendencia horizontal central, por lo que no hay independencia. Esto no es bueno para el modelo, pues nos indica que la regresión lineal no es el modelo ideal para esta distribución de los datos. 
+
+#### Homocedasticidad 
+El segundo supuesto que debe cumplir una regresión lineal es la Homocedasticidad, es decir que la varianza de los residuos sea constante. Para ello se realiza el test de Breusch Pagan
+```{r, echo=F, message=F}
 #homocedasticidad no hay
 require(lmtest)
 bptest(modelo_lectura)
 ```
+Como podemos ver, se obtiene un *p-value* muy pequeño, por ende se rechaza la hipótesis nula, en otras palabras, se rechaza la existencia de homocedasticidad
+
+#### Normalidad
+El tercer supuesto que debe cumplir una regresión lineal es que los residuios del modelo deben distribuir normal. Se realizó un histograma de los residuos y podemos ver que este, se asemeja bastante a la distribución normal que está representada por la curva azul, pero en el punto central de los datos se desvían un poco. 
 ```{r, echo=F}
 ri <- rstandard(modelo_lectura)
 # Histogram
 hist(ri, breaks=100, main="", xlab="standardized residual", probability=TRUE, xlim=c(-4,4))
 curve(dnorm(x), col="blue", lwd=2, add=TRUE)
 
-
 ```
+
+Por otro lado también se realizó un qqplot de los residuos, y podemos notar que en las colas se aleja bastante de la linea roja, que representa los cuantiles teóricos de una distribución normal, por lo tanto no se cumple el supuesto de normalidad 
 
 ```{r, echo=F}
-qqnorm(datos$PtjeLectura)
-qqline(datos$PtjeLectura, col="red")
+qqnorm(modelo_lectura$residuals)
+qqline(modelo_lectura$residuals, col="red")
 
 
 ```
 
+Viendo lo anterior se evaluó la existencia de puntos especificos de los datos que pudiesen estar afectando y dando estos malos resultados, por lo que buscamos los outliers.
 
+#### Outliers
+los puntos por sobre y bajo la linea azul son outliers
+```{r, echo=F}
+#busqueda outliers
+residuos <- rstandard(modelo_lectura)
+
+plot(modelo_lectura$fitted.values, residuos, pch=19, xlab="Valores ajustados", ylab="Residuos estandarizados", ylim=c(-4,4))
+abline(h=qnorm(0.975), col="blue", lwd=2); abline(h=-qnorm(0.975), col="blue", lwd=2)
+
+```
+No es una opción la eliminación de outliers pues estos no son valores extremos realizados a partir de muestras mal hechas o algún problema metodológico. Son datos reales y válidos obtenidos de la medición de la prueba SIMCE
+
+El análisis hecho en este segmento para el modelo con la prueba de lectura es análogo al de la prueba de matemática por que son prácticamente iguales las distribuciones de sus datos. 
+
+Lamentablemente no fue posible mejorar el ajuste de nuestro modelo.
 
 # Conclusiones
 El objetivo de esta investigación fue evaluar cuales eran las variables más importante en cuánto al desempeño de los estudiantes en la prueba SIMCE.  Al realizar el análisis descriptivo pudimos ver que las variables estudiadas que mas influían en el aumento o disminución de puntaje en la prueba fueron: el nivel socioeconómico, la convivencia escolar y el autoestima. Es importante mencionar, que estas conclusiones nos permiten tener especial atención en estas variables para futuras investigaciones con bases de datos más grandes, y relacionar las ideas, no obstante en la presente investigación, con sólo el análisis descrpitivo no podemos hacer mas conclusiones a partir de ellas. 
@@ -402,4 +426,4 @@ Para estudios futuros, sería importante realizar un análisis con técnicas má
 
 # Referencias
 
-En esta sección se deben presentar las referencias citadas a lo largo del informe utilizando de manera consistente un estilo de citación a elección (APA, ISO, Vancouver, MLA, etc.).
+Agencia de la Calidad de la Educación, (sin fecha). Portal de Estudios: Bases de datos. Recuperado de http://informacionestadistica.agenciaeducacion.cl/#/bases
